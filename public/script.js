@@ -1,160 +1,221 @@
 const grid = document.querySelector('#grid-videojuegos');
 const estadoCarga = document.querySelector('#estado-carga');
 const estadoError = document.querySelector('#estado-error');
-const filtroTienda = document.getElementById('filtro-tienda');
 const filtroOrden = document.getElementById('filtro-orden');
-const btnSteam = document.getElementById('btn-steam');
-const btnEpic = document.getElementById('btn-epic');
-const btnGog = document.getElementById('btn-gog');
-const btnMS = document.getElementById('btn-ms');
 const btnTodas = document.getElementById('btn-todas');
+const botonesTienda = document.querySelectorAll('button[data-tienda]');
+const modal = document.getElementById('modal-detalle');
+const cerrarModal = document.getElementById('cerrar-modal');
+const modalTitulo = document.getElementById('modal-titulo');
+const modalImg = document.getElementById('modal-img');
+const modalPrecio = document.getElementById('modal-precio');
+const modalDescuento = document.getElementById('modal-descuento');
+const modalPorcentaje = document.getElementById('modal-porcentaje');
+const modalTienda = document.getElementById('modal-tienda');
+const modalLink = document.getElementById('modal-link');
+const modalCargando = document.getElementById('modal-cargando');
+const modalContenido = document.getElementById('modal-contenido');
+const inputBusqueda = document.querySelector('input[type="text"]');
+const btnBusqueda = document.querySelector('.flex.items-center.gap-2 button')
+
 
 let juegosOriginales = [];
-
-if (!grid || !estadoCarga || !estadoError) {
-    console.error('Faltan elementos HTML requeridos: #grid-videojuegos, #estado-carga, #estado-error');
-}
-
-
 
 
 function renderizarvideojuegos(lista) {
     grid.innerHTML = '';
 
-    lista.forEach((juego) => {
-
+    lista.forEach(juego => {
         const titulo = juego.title || 'Error de titulo';
         const img = juego.thumb || 'Error de imagen';
-        const precio = juego.normalPrice ?? "-" ;
+        const precio = juego.normalPrice ?? "-";
         const oferta = juego.salePrice ?? juego.cheapest ?? "-";
         const tienda = juego.storeID || 'Error de tienda';
 
         const card = document.createElement('article');
         card.className = "bg-white rounded-xl shadow-sm overflow-hidden border border-slate-100 flex flex-col";
         card.innerHTML = `
-        <img src="${img}" alt="${titulo}" class="h-40 w-full object-cover" />
-        <div class="p-4 flex flex-col gap-2 flex-1">
-        <h3 class="font-semibold text-slate-900 leading-tight">${titulo}</h3>
-        <p class="text-xs text-slate-400">${tienda}</p>
-        <p class="text-xs text-slate-500">
-            Precio: ${precio && precio !== "-" ? `<s>$${precio}</s>` : "—"}
-            ${oferta && oferta !== "-" ? ` · <span class="font-semibold text-slate-900">$${oferta}</span>` : ""}
-        </p>
-        <button class="mt-2 w-full bg-slate-900 text-white py-2 rounded-lg text-sm hover:bg-slate-800">
-                Ver detalle
-        </button>
-        </div>
-            `;
+            <img src="${img}" alt="${titulo}" class="h-40 w-full object-cover" />
+            <div class="p-4 flex flex-col gap-2 flex-1">
+                <h3 class="font-semibold text-slate-900 leading-tight">${titulo}</h3>
+                <p class="text-xs text-slate-400">Tienda ID: ${tienda}</p>
+                <p class="text-xs text-slate-500">
+                    Precio: ${precio !== "-" ? `<s>$${precio}</s>` : "—"}
+                    ${oferta !== "-" ? ` · <span class="font-semibold text-slate-900">$${oferta}</span>` : ""}
+                </p>
+                <button class="mt-2 w-full bg-slate-900 text-white py-2 rounded-lg text-sm hover:bg-slate-800">
+                    Ver detalle
+                </button>
+            </div> `;
+
+        // Botón para abrir modal
+        const btnDetalle = card.querySelector('button');
+        btnDetalle.addEventListener('click', () => abrirModal(juego));
+
         grid.appendChild(card);
     });
+}
 
+
+
+function filtrarYOrdenar(tiendaID = null, query = '') {
+    let resultado = [...juegosOriginales];
+
+  
+    if (query.trim() !== '') {
+        const busquedaNormalizada = query.toLowerCase().trim();
+        resultado = resultado.filter(juego => 
+            juego.title && juego.title.toLowerCase().includes(busquedaNormalizada)
+        );
+    }
+
+   
+    if (tiendaID !== null) {
+        resultado = resultado.filter(j => String(j.storeID) === String(tiendaID));
+    }
+
+  
+    const orden = filtroOrden?.value;
+    switch (orden) {
+        case 'name':
+            resultado.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+        case 'recent':
+            resultado.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+            break;
+        
+        case 'precio': 
+        resultado.sort((a, b) => {
+            const precioA = a.salePrice ?? a.normalPrice ?? Infinity;
+            const precioB = b.salePrice ?? b.normalPrice ?? Infinity;
+            return precioA - precioB;});
+            break;
+
+
+        case 'oferta':
+            resultado.sort((a, b) => {
+                const tieneDescA = a.salePrice && a.salePrice < a.normalPrice ? 1 : 0;
+                const tieneDescB = b.salePrice && b.salePrice < b.normalPrice ? 1 : 0;
+                return tieneDescB - tieneDescA;
+            });
+            break;
+        default:
+            break; 
+    }
+
+    renderizarvideojuegos(resultado);
 }
 
 
 async function cargarvideojuegos() {
     try {
-        if (estadoCarga) estadoCarga.classList.remove('hidden');
-        
+        estadoCarga?.classList.remove('hidden');
+
         const url = 'https://www.cheapshark.com/api/1.0/deals?upperPrice=15&pageSize=20';
         const respuesta = await fetch(url);
-        
-        if (!respuesta.ok) {
-            throw new Error(`Error HTTP ${respuesta.status}: ${respuesta.statusText}`);
-        }
-        
-        const datos = await respuesta.json();
-        juegosOriginales = datos;
-        window._videojuegos = datos;
-        renderizarvideojuegos(datos);
-        cargarOpcionesTiendas(datos);
-        
-        if (estadoCarga) estadoCarga.classList.add('hidden');
-        if (estadoError) estadoError.classList.add('hidden');
+
+        if (!respuesta.ok) throw new Error(`Error HTTP ${respuesta.status}: ${respuesta.statusText}`);
+
+        juegosOriginales = await respuesta.json();
+        filtrarYOrdenar(); 
+        estadoCarga?.classList.add('hidden');
+        estadoError?.classList.add('hidden');
     } catch (error) {
-        console.error('Error al cargar los videojuegos:', error);
-        if (estadoCarga) estadoCarga.classList.add('hidden');
-        if (estadoError) estadoError.classList.remove('hidden');
+        console.error('Error al cargar videojuegos:', error);
+        estadoCarga?.classList.add('hidden');
+        estadoError?.classList.remove('hidden');
     }
 }
-cargarvideojuegos();
 
-function cargarOpcionesTiendas(juegos) {
-  if (!filtroTienda) return; 
+
+function abrirModal(juego) {
+    const tiendas = {
+        7: 'GOG',
+        11: 'Humble Store',
+        13: 'Ubisoft',
+        25: 'Epic Games Store'
+    };
+
+   
+    modal.classList.remove('hidden');
+    modalContenido.classList.add('hidden');
+    modalCargando.classList.remove('hidden');
+
+
+    setTimeout(() => {
   
-  const storesUnicos = [...new Set(juegos.map(j => j.storeID))];
-  filtroTienda.querySelectorAll('option:not([value=""])').forEach(o => o.remove());
+        modalCargando.classList.add('hidden');
+        modalContenido.classList.remove('hidden');
 
-  const tiendas = {
-    7: 'Epic Games Store',
-    11: 'GOG',
-    13: 'Microsoft Store',
-    25: 'Steam'
-  };
+    
+        modalTitulo.textContent = juego.title || 'Sin título';
+        modalImg.src = juego.thumb || '';
+        modalImg.alt = juego.title || '';
+        modalPrecio.textContent = `Precio normal: $${juego.normalPrice ?? '-'}`;
+        modalDescuento.textContent = juego.salePrice ? `Precio oferta: $${juego.salePrice}` : 'Sin descuento';
 
-  storesUnicos.forEach(storeID => {
-    const option = document.createElement('option');
-    option.value = storeID;
-    option.textContent = tiendas[storeID] || `Tienda ${storeID}`;
-    filtroTienda.appendChild(option);
-  });
+        if (juego.salePrice && juego.normalPrice) {
+            const porcentaje = Math.round(((juego.normalPrice - juego.salePrice) / juego.normalPrice) * 100);
+            modalPorcentaje.textContent = `Descuento: ${porcentaje}%`;
+            modalLink.classList.remove('hidden');
+            modalLink.href = `https://www.cheapshark.com/redirect?dealID=${juego.dealID}`;
+        } else {
+            modalPorcentaje.textContent = '';
+            modalLink.classList.add('hidden');
+        }
+
+        modalTienda.textContent = `Tienda: ${tiendas[juego.storeID] || juego.storeID}`;
+    }, 2000); 
 }
 
 
-// Función para aplicar todos los filtros
-function aplicarFiltros() {
-  let resultado = [...juegosOriginales];
+cerrarModal.addEventListener('click', () => modal.classList.add('hidden'));
+modal.addEventListener('click', e => {
+    if (e.target === modal) modal.classList.add('hidden');
+});
 
-  // Filtro por tienda
-  const tiendaSeleccionada = filtroTienda?.value;
-  if (tiendaSeleccionada) {
-    resultado = resultado.filter(j => j.storeID == tiendaSeleccionada);
-  }
 
-  // Ordenar resultados
-  const ordenSeleccionado = filtroOrden?.value;
-  switch (ordenSeleccionado) {
-    case 'name':
-      resultado.sort((a, b) => a.title.localeCompare(b.title));
-      break;
-    case 'recent':
-      resultado.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
-      break;
-    case 'rating':
-    default:
-      resultado.sort((a, b) => {
-        const descA = a.salePrice ? ((a.normalprice - a.salePrice) / a.normalprice) * 100 : 0;
-        const descB = b.salePrice ? ((b.normalprice - b.salePrice) / b.normalprice) * 100 : 0;
-        return descB - descA;
-      });
-  }
 
-  renderizarvideojuegos(resultado);
+
+botonesTienda.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tiendaID = btn.getAttribute('data-tienda');
+        const query = inputBusqueda.value; 
+        filtrarYOrdenar(tiendaID, query);
+    });
+});
+
+
+btnTodas.addEventListener('click', () => {
+    const query = inputBusqueda.value;
+    filtrarYOrdenar(null, query);
+});
+
+
+filtroOrden?.addEventListener('change', () => filtrarYOrdenar());
+
+function ejecutarBusqueda() {
+    const query = inputBusqueda.value;
+    const tiendaActiva = document.querySelector('.bg-slate-600:not(#btn-todas)')?.getAttribute('data-tienda') || null;
+    
+    filtrarYOrdenar(tiendaActiva, query);
 }
 
-// Función para filtrar por tienda desde botones
-function filtrarPorTiendaBoton(tiendaID) {
-  if (tiendaID === null) {
-    // Ver todas las tiendas
-    filtroTienda.value = '';
-  } else {
-    filtroTienda.value = tiendaID;
-  }
-  aplicarFiltros();
-}
 
-// Listeners para filtros del select
-if (filtroTienda) {
-  filtroTienda.addEventListener('change', aplicarFiltros);
-}
+btnBusqueda.addEventListener('click', ejecutarBusqueda);
 
-if (filtroOrden) {
-  filtroOrden.addEventListener('change', aplicarFiltros);
-}
 
-// Listeners para botones de tiendas
-if (btnSteam) btnSteam.addEventListener('click', () => filtrarPorTiendaBoton(25));
-if (btnEpic) btnEpic.addEventListener('click', () => filtrarPorTiendaBoton(7));
-if (btnGog) btnGog.addEventListener('click', () => filtrarPorTiendaBoton(11));
-if (btnTodas) btnTodas.addEventListener('click', () => filtrarPorTiendaBoton(null));
+inputBusqueda.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+        ejecutarBusqueda();
+    }
+});
+
+
+filtroOrden?.addEventListener('change', () => {
+    const query = inputBusqueda.value;
+    filtrarYOrdenar(null, query); 
+});
+
 
 cargarvideojuegos();

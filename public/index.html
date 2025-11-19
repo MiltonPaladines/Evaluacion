@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GameZone Store</title>
     <link href="./output.css" rel="stylesheet" />
+  
 </head>
 <body class="bg-slate-100 min-h-screen">
     <header class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
@@ -21,14 +22,18 @@
 <section class="mb-6 pb-4 border-b border-slate-200">
     <h3 class="text-sm font-semibold text-slate-700 mb-2">Filtrar por tienda:</h3>
     <div class="flex gap-2 flex-wrap">
+       
         <button id="btn-todas" class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm hover:bg-slate-500 transition">Ver todas</button>
-        <button id="btn-steam" data-tienda="25" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Steam</button>
-        <button id="btn-epic" data-tienda="7" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Epic Games Store</button>
-        <button id="btn-gog" data-tienda="11" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">GOG</button>
-        <button id="btn-ms" data-tienda="13" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Microsoft Store</button>
+        <button id="btn-steam" data-tienda="25" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Epic Games Store</button>
+        <button id="btn-epic" data-tienda="7" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">GOG</button>
+        <button id="btn-gog" data-tienda="11" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Humble Store</button>
+        <button id="btn-ms" data-tienda="13" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Ubisoft</button>
+
 
     </div>
+    
 </section>
+
 
 <!-- BARRA DE BÚSQUEDA / CONTROLES -->
 <section class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -39,10 +44,10 @@
 
 <div class="flex gap-2">
 <select id="filtro-orden" class="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-400">
-<option value="">Ordenar por</option>
-<option value="rating">Mejor valorados</option>
-<option value="recent">Más recientes</option>
-<option value="name">Nombre</option>
+    <option value="recent">Más recientes</option>
+    <option value="name">Nombre</option>
+    <option value="oferta">Ofertas</option>
+    <option value="precio">Precio</option>
 </select>
 </div>
 </section>
@@ -56,6 +61,29 @@
         </div>
     </section>
 </main>
+
+<div id="modal-detalle" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full relative">
+        <button id="cerrar-modal" class="absolute top-2 right-2 text-slate-500 hover:text-slate-900">&times;</button>
+        
+        <div id="modal-cargando" class="flex flex-col items-center justify-center p-8">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mb-3"></div>
+            <p class="text-slate-600 text-sm">Cargando detalles...</p>
+        </div>
+
+        <div id="modal-contenido" class="hidden">
+            <h3 id="modal-titulo" class="text-xl font-semibold mb-2"></h3>
+            <img id="modal-img" src="" alt="" class="w-full h-48 object-cover mb-4 rounded" />
+            <p id="modal-precio" class="mb-1"></p>
+            <p id="modal-descuento" class="mb-1"></p>
+            <p id="modal-porcentaje" class="mb-2 text-sm text-slate-500"></p>
+            <p id="modal-tienda" class="text-sm text-slate-500 mb-4"></p>
+            <a id="modal-link" href="#" target="_blank" class="inline-block w-full text-center bg-slate-900 text-white py-2 rounded-lg text-sm hover:bg-slate-800">
+                Ir a la oferta
+            </a>
+        </div>
+    </div>
+</div>
 
 <script src="./script.js"></script>
 </body>
