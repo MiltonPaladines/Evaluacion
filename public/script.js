@@ -38,17 +38,17 @@ function renderizarvideojuegos(lista) {
             <img src="${img}" alt="${titulo}" class="h-40 w-full object-cover" />
             <div class="p-4 flex flex-col gap-2 flex-1">
                 <h3 class="font-semibold text-slate-900 leading-tight">${titulo}</h3>
-                <p class="text-xs text-slate-400">Tienda ID: ${tienda}</p>
+               
                 <p class="text-xs text-slate-500">
                     Precio: ${precio !== "-" ? `<s>$${precio}</s>` : "—"}
                     ${oferta !== "-" ? ` · <span class="font-semibold text-slate-900">$${oferta}</span>` : ""}
                 </p>
-                <button class="mt-2 w-full bg-slate-900 text-white py-2 rounded-lg text-sm hover:bg-slate-800">
+                <button class="mt-2 w-full bg-slate-900 text-white py-2 rounded-lg text-sm hover:bg-slate-800 active:scale-95 active:bg-gray-900 shadow-md">
                     Ver detalle
                 </button>
             </div> `;
 
-        // Botón para abrir modal
+      
         const btnDetalle = card.querySelector('button');
         btnDetalle.addEventListener('click', () => abrirModal(juego));
 
@@ -80,6 +80,7 @@ function filtrarYOrdenar(tiendaID = null, query = '') {
         case 'name':
             resultado.sort((a, b) => a.title.localeCompare(b.title));
             break;
+            
         case 'recent':
             resultado.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
             break;
@@ -90,7 +91,6 @@ function filtrarYOrdenar(tiendaID = null, query = '') {
             const precioB = b.salePrice ?? b.normalPrice ?? Infinity;
             return precioA - precioB;});
             break;
-
 
         case 'oferta':
             resultado.sort((a, b) => {
@@ -181,7 +181,7 @@ botonesTienda.forEach(btn => {
     btn.addEventListener('click', () => {
         const tiendaID = btn.getAttribute('data-tienda');
         const query = inputBusqueda.value; 
-        filtrarYOrdenar(tiendaID, query);
+        filtrarYOrdenar(tiendaID, query); 
     });
 });
 
@@ -196,9 +196,7 @@ filtroOrden?.addEventListener('change', () => filtrarYOrdenar());
 
 function ejecutarBusqueda() {
     const query = inputBusqueda.value;
-    const tiendaActiva = document.querySelector('.bg-slate-600:not(#btn-todas)')?.getAttribute('data-tienda') || null;
-    
-    filtrarYOrdenar(tiendaActiva, query);
+    filtrarYOrdenar(null, query);
 }
 
 
@@ -209,12 +207,6 @@ inputBusqueda.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
         ejecutarBusqueda();
     }
-});
-
-
-filtroOrden?.addEventListener('change', () => {
-    const query = inputBusqueda.value;
-    filtrarYOrdenar(null, query); 
 });
 
 

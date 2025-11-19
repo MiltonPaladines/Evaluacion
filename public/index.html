@@ -3,38 +3,30 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GameZone Store</title>
+    <title>Evaluacion</title>
     <link href="./output.css" rel="stylesheet" />
     <link rel="icon" type="image/png" href="https://i.pinimg.com/736x/f3/6f/65/f36f651d90665a599fa7839b71c7718e.jpg">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://i.pinimg.com/736x/f3/6f/65/f36f651d90665a599fa7839b71c7718e.jpg">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://i.pinimg.com/736x/f3/6f/65/f36f651d90665a599fa7839b71c7718e.jpg">
-    <link rel="shortcut icon" href="https://i.pinimg.com/736x/f3/6f/65/f36f651d90665a599fa7839b71c7718e.jpg">
   
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body style="background-color: rgba(255, 255, 255, 0.788);" class="min-h-screen overflow-y-scroll">
     <header class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight">Tiendukis</h1>
-            <p class="text-sm text-slate-200">Catálogo de videojuego</p>
+            <h1 class="text-2xl font-bold tracking-tight">STEAM 3</h1>
+            <p class="text-sm text-slate-200">Tu tienda de videojuegos</p>
         </div>
-        <span class="text-xs text-slate-300">v1.0 · demo educativa</span>
+       <span class="text-xs text-slate-300 font-bold italic">No se hacen devoluciones</span>
     </header>
 
 <main class="p-6 max-w-6xl mx-auto">
 
-<!-- BOTONES DE TIENDAS -->
+
 <section class="mb-6 pb-4 border-b border-slate-200">
-    <h3 class="text-sm font-semibold text-slate-700 mb-2">Filtrar por tienda:</h3>
-    <div class="flex gap-2 flex-wrap">
-       
-        <button id="btn-todas" class="px-4 py-2 bg-slate-600 text-white rounded-lg text-sm hover:bg-slate-500 transition">Ver todas</button>
-        <button id="btn-steam" data-tienda="25" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Epic Games Store</button>
-        <button id="btn-epic" data-tienda="7" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">GOG</button>
-        <button id="btn-gog" data-tienda="11" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Humble Store</button>
-        <button id="btn-ms" data-tienda="13" class="px-4 py-2 bg-slate-700 text-white rounded-lg text-sm hover:bg-slate-600 transition">Ubisoft</button>
-
-
-    </div>
+        <div class="flex **gap-0.5** flex-wrap items-center">
+<button id="btn-todas" class="px-4 py-2 bg-red-600 text-white rounded-full text-sm hover:bg-red-700 transition active:scale-95 active:bg-red-800 shadow-md">Ver todas</button>
+        <button id="btn-steam" data-tienda="25" class="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition active:scale-95 active:bg-gray-900 shadow-md">Epic Games Store</button>
+        <button id="btn-epic" data-tienda="7" class="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition active:scale-95 active:bg-gray-900 shadow-md">GOG</button>
+        <button id="btn-gog" data-tienda="11" class="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition active:scale-95 active:bg-gray-900 shadow-md">Humble Store</button>
+        <button id="btn-ms" data-tienda="13" class="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition active:scale-95 active:bg-gray-900 shadow-md">Ubisoft</button></div>
     
 </section>
 
@@ -43,11 +35,11 @@
 <section class="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 <div class="flex items-center gap-2 w-full md:max-w-md">
 <input type="text" placeholder="Buscar videojuego..." class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400" />
-<button class="px-4 py-2 bg-slate-900 text-white rounded-lg text-sm hover:bg-slate-800">Buscar</button>
+<button class="px-4 py-2 bg-black text-white rounded-full text-sm hover:bg-gray-800 transition active:scale-95 active:bg-gray-900 shadow-md">Buscar</button>
 </div>
 
 <div class="flex gap-2">
-<select id="filtro-orden" class="rounded-lg border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-400">
+<select id="filtro-orden" class="rounded-full border border-slate-200 px-3 py-2 text-sm bg-black text-white focus:outline-none focus:ring-2 focus:ring-slate-400 active:scale-95 active:bg-gray-900 shadow-md">
     <option value="recent">Más recientes</option>
     <option value="name">Nombre</option>
     <option value="oferta">Ofertas</option>
@@ -58,7 +50,7 @@
  
     <!-- GRID DE VIDEOJUEGOS -->
     <section>
-        <h2 class="text-lg font-semibold mb-4 text-slate-800">Videojuegos destacados</h2>
+        <h2 class="text-lg font-semibold mb-4 text-slate-800">Destacados y Recomendados</h2>
         <p id="estado-carga" class="text-sm text-slate-500 mb-3 hidden">Cargando...</p>
         <p id="estado-error" class="text-sm text-red-500 mb-3 hidden">Error al cargar videojuegos</p>
         <div id="grid-videojuegos" class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -72,7 +64,7 @@
         
         <div id="modal-cargando" class="flex flex-col items-center justify-center p-8">
             <img src="https://i.pinimg.com/originals/71/dd/aa/71ddaa4da1eb1884728b716b6462ae1c.gif" alt="Cargando..." class="w-16 h-16 object-contain mb-3" />
-            <p class="text-slate-600 text-sm">Cargando detalles...</p>
+            <p class="text-slate-600 text-sm">Cargando...</p>
         </div>
 
         <div id="modal-contenido" class="hidden">
@@ -82,7 +74,7 @@
             <p id="modal-descuento" class="mb-1"></p>
             <p id="modal-porcentaje" class="mb-2 text-sm text-slate-500"></p>
             <p id="modal-tienda" class="text-sm text-slate-500 mb-4"></p>
-            <a id="modal-link" href="#" target="_blank" class="inline-block w-full text-center bg-slate-900 text-white py-2 rounded-lg text-sm hover:bg-slate-800">
+            <a id="modal-link" href="#" target="_blank" class="inline-block w-full text-center bg-slate-900 text-white py-2 rounded-lg text-sm hover:bg-slate-800 active:scale-95 active:bg-gray-900 shadow-md">
                 Ir a la oferta
             </a>
         </div>
